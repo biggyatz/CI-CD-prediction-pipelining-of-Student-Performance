@@ -1,11 +1,16 @@
-# CI/CD pipelines - github actions deployment method
+# CI/CD pipelines -AWS deployment method
 
+# LINK TO THE DEPLOYED MODEL - http://studentperformance-env-1.eba-ph2xqb5w.us-east-1.elasticbeanstalk.com/
+
+# Major steps involved
 1. Data Ingestion
 2. Data Transformer
 3. Modal trainer
 4. Modal Evaluation
 5. Model Deployment
 
+
+# Day wise work flow
 # Day 1 - git config
 1. Set up of github
 2. New environement (venv)
@@ -41,5 +46,4 @@ we perform the trainng of the model through various machine learning models and 
 # day 7 - prediction pipeline and deployment into azure
 we created all the pipeline to preprocess the data now we need the prediction model where the data is collected inorder to find the prediction with respect to the math score and deploy our model into the AWS cloud platform whose link is as follows
 
-# LINK TO THE DEPLOYED MODEL - http://studentperformance-env-1.eba-ph2xqb5w.us-east-1.elasticbeanstalk.com/
 
