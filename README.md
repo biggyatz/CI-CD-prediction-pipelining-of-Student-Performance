@@ -34,3 +34,12 @@
 1. Due to the presence of categorical numerical and other features we need to transform the data
 2. As per the data we perform the feature scaling , feature extraction and other Feature extraction techniques
 3. We need to create a pipeline to impute form any missing values present in the data set and use of one hot encoder techniques and standard scaler for scaling the values
+
+# day 6 - model training, evalutaion and hyper parameter tuning
+we perform the trainng of the model through various machine learning models and algorithms to find the best fit model for the given problem statement and test for any parameters to tune our model and acheive better performance of the model trained
+
+# day 7 - prediction pipeline and deployment into azure
+we created all the pipeline to preprocess the data now we need the prediction model where the data is collected inorder to find the prediction with respect to the math score and deploy our model into the AWS cloud platform whose link is as follows
+
+# LINK TO THE DEPLOYED MODEL - http://studentperformance-env-1.eba-ph2xqb5w.us-east-1.elasticbeanstalk.com/
+
