@@ -1,0 +1,7 @@
+# One-click deploy on Render: Dashboard -> New -> Blueprint -> pick this repo.
+services:
+  - type: web
+    name: student-performance
+    runtime: docker
+    plan: free
+    healthCheckPath: /health

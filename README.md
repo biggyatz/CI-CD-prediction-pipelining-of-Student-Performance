@@ -1,49 +1,93 @@
-# CI/CD pipelines -AWS deployment method
+# Student Performance Prediction — End-to-End ML Pipeline
 
-# LINK TO THE DEPLOYED MODEL - http://studentperformance-env-1.eba-ph2xqb5w.us-east-1.elasticbeanstalk.com/
+Predicts a student's **math score** from demographics, lunch type, test
+preparation and their reading/writing scores. The project is structured as a
+production-style ML pipeline (ingestion → transformation → training →
+prediction) with custom logging and exceptions, served by a Flask app.
 
-# Major steps involved
-1. Data Ingestion
-2. Data Transformer
-3. Modal trainer
-4. Modal Evaluation
-5. Model Deployment
+## Results
 
+Nine regressors were compared in `notebook/2. MODEL TRAINING.ipynb`; the
+linear models generalised best.
 
-# Day wise work flow
-# Day 1 - git config
-1. Set up of github
-2. New environement (venv)
-3. Mini project structure of the 
-4. setup.py file and requirements.txt
-5. src folder 
+| Model | Test R² |
+| --- | --- |
+| Ridge | 0.881 |
+| **Linear Regression** (deployed) | **0.880** |
+| Random Forest | 0.855 |
+| CatBoost | 0.852 |
+| AdaBoost | 0.844 |
+| XGBoost | 0.828 |
+| Lasso | 0.825 |
+| K-Neighbours | 0.784 |
+| Decision Tree | 0.734 |
 
-# Day 2 - project structure, exception and loggers
-1. Splitting the project into components of the project structure 
-2. The data ingestion, transformation and other trainer evalution etc are like the seperate modules or components that are present into the ML project 
-3. Creating the custom exception file and logger and registering the log into the logger for the first 
+Linear Regression test RMSE 5.40, MAE 4.22.
 
-# Day 3 - EDA and model training 
-1. Provide the observation to the client and we perform the EDA part in the jupyter notebook
-2. Create the train test split and the evalute the models and compare the results
-3. Be format ready to feed it to the data_ingestion.py and utils.py files
+## Pipeline
 
-# Day 4 - data ingestion 
-1. Create the file path and config class redirecting the output or the result into the artifacts folder 
-2. Read the dataset from any sources
-3. Conversion of the raw datapath to csv
-4. Creating the train test split and creating its respective csv files after the split
-5. Returning the train and test data paths for data transformation model to commence 
+```
+notebook/data/stud.csv
+   │  src/components/data_ingestion.py       read → artifacts/data.csv, 80/20 train/test split
+   ▼
+   │  src/components/data_transformation.py  impute + scale numerics, impute + one-hot + scale categoricals
+   ▼                                          → artifacts/proprocessor.pkl
+   │  src/components/model_trainer.py        GridSearchCV over 7 models, keep best by test R² (≥ 0.6)
+   ▼                                          → artifacts/model.pkl
+application.py ── src/pipeline/predict_pipeline.py  (loads both pickles, predicts)
+```
 
-# day 5 - data transformation 
-1. Due to the presence of categorical numerical and other features we need to transform the data
-2. As per the data we perform the feature scaling , feature extraction and other Feature extraction techniques
-3. We need to create a pipeline to impute form any missing values present in the data set and use of one hot encoder techniques and standard scaler for scaling the values
+## Project layout
 
-# day 6 - model training, evalutaion and hyper parameter tuning
-we perform the trainng of the model through various machine learning models and algorithms to find the best fit model for the given problem statement and test for any parameters to tune our model and acheive better performance of the model trained
+| Path | What it is |
+| --- | --- |
+| `application.py` | Flask app: landing (`/`), form + prediction (`/predictdata`), health (`/health`) |
+| `src/` | Pipeline components, `logger.py`, `exception.py`, `utils.py` |
+| `artifacts/` | Trained preprocessor and model (scikit-learn 1.3.2) plus the data splits |
+| `notebook/` | EDA and model-training notebooks, raw data |
+| `templates/` | HTML pages |
+| `Dockerfile`, `render.yaml`, `Procfile`, `.ebextensions/` | Deployment config (Render/Docker, or AWS Elastic Beanstalk) |
 
-# day 7 - prediction pipeline and deployment into azure
-we created all the pipeline to preprocess the data now we need the prediction model where the data is collected inorder to find the prediction with respect to the math score and deploy our model into the AWS cloud platform whose link is as follows
+## Run locally
 
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python application.py                  # http://localhost:5000/predictdata
+```
 
+Retrain from scratch:
+
+```bash
+pip install -r requirements-train.txt
+python -m src.components.data_ingestion
+```
+
+Docker:
+
+```bash
+docker build -t student-performance .
+docker run -p 8000:8000 student-performance
+```
+
+## Deploy
+
+The original AWS Elastic Beanstalk environment
+(`studentperformance-env-1…elasticbeanstalk.com`) has been shut down.
+Two options:
+
+* **Render (free):** <https://dashboard.render.com> → **New → Blueprint** →
+  select this repo → **Apply**. Free services sleep after 15 minutes idle.
+* **AWS Elastic Beanstalk (paid):** `eb init -p python-3.11 student-performance && eb create`.
+  `.ebextensions/python.config` points EB at `application:application`.
+
+## Changelog (2026 clean-up)
+
+* Fixed a bug where the reading and writing scores from the form were swapped
+  before prediction.
+* Fixed the Elastic Beanstalk `WSGIPath` (it had a stray space).
+* Split runtime vs. training dependencies and pinned versions so the saved
+  pickles load.
+* Made the training data path work on Linux/macOS (it used Windows `\` separators).
+* Removed CatBoost training logs from version control.
+* Added Dockerfile, Render blueprint and `/health` endpoint.

@@ -1,0 +1,7 @@
+.git
+.github
+notebook
+catboost_info
+logs
+__pycache__
+venv
