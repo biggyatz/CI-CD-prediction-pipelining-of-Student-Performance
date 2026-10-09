@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Performance Insights</title>
+<meta name="description" content="Predict a student's math score, see what drives the prediction, and explore how background relates to exam results.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">Machine learning · education analytics</p>
+    <h1>Student performance insights</h1>
+    <p class="lead">Estimate a student's <strong>math score</strong> from their background and their reading and writing results, see exactly which inputs moved the estimate, and explore what 1,000 students' results say about lunch, test preparation and parental education.</p>
+    <div class="kpis" id="kpis"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="layout">
+    <section class="card" aria-labelledby="inputs-title">
+      <h2 id="inputs-title">Student details</h2>
+      <p class="sub">Change any input. The estimate updates instantly.</p>
+      <div id="inputs"></div>
+    </section>
+
+    <section class="card" aria-labelledby="result-title">
+      <h2 id="result-title">Estimated math score</h2>
+      <div class="hero" aria-live="polite"><span class="big" id="score">–</span><span class="of">/ 100</span></div>
+      <div class="meta" id="meta"></div>
+      <h3 style="margin:22px 0 0;font-size:1rem">What moved the estimate</h3>
+      <p class="sub">Points added or removed compared with an average student in the data.</p>
+      <div class="chart" id="contrib-chart"></div>
+      <p class="note">Effects are measured with reading and writing scores held fixed. For example, test preparation mostly lifts reading and writing, so once those are known it adds little on its own; see the averages below for its overall link with results.</p>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="insights-title">
+    <div class="card-head">
+      <div>
+        <h2 id="insights-title">What the data shows</h2>
+        <p class="sub">Average exam score by group across all 1,000 students. Axes start at 50; the dashed line is the overall average.</p>
+      </div>
+      <button class="ghost" data-table-toggle="insights">Show table</button>
+    </div>
+    <div class="controls"><div class="chips" id="subject" role="radiogroup" aria-label="Subject"></div></div>
+    <div class="multiples" id="insights-chart" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:start"></div>
+    <div class="table-view" id="insights-table" hidden></div>
+  </section>
+
+  <section class="card" aria-labelledby="model-title">
+    <h2 id="model-title">About the model</h2>
+    <p class="sub">A linear regression trained on 800 students and tested on 200 it had never seen, the split used by the project's ML pipeline. Each category is measured against a baseline category, so every coefficient reads directly as points.</p>
+    <div class="stats-row" id="model-stats"></div>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Data: the "Students Performance in Exams" dataset (1,000 students) used throughout this project. The model runs entirely in your browser.</p>
+  <p><a href="https://github.com/biggyatz/student-performance-insights">Source, pipeline and notebooks on GitHub</a></p>
+</footer>
+<div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+<script src="predict.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
