@@ -1,6 +1,6 @@
 # Student Performance Prediction — End-to-End ML Pipeline
 
-**Live demo:** <https://biggyatz.github.io/CI-CD-prediction-pipelining-of-Student-Performance/> (runs entirely in the browser, hosted on GitHub Pages)
+**Live demo:** <https://biggyatz.github.io/CI-CD-prediction-pipelining-of-Student-Performance/>: estimate a math score, see which inputs moved it, and explore group averages (runs entirely in the browser).
 
 Predicts a student's **math score** from demographics, lunch type, test
 preparation and their reading/writing scores. The project is structured as a
@@ -48,7 +48,7 @@ application.py ── src/pipeline/predict_pipeline.py  (loads both pickles, pre
 | `artifacts/` | Trained preprocessor and model (scikit-learn 1.3.2) plus the data splits |
 | `notebook/` | EDA and model-training notebooks, raw data |
 | `templates/` | HTML pages |
-| `web/`, `export_web_model.py` | Static in-browser version published to GitHub Pages |
+| `web/`, `train_web_model.py` | The web app (GitHub Pages) and the script that trains and exports its model |
 | `Dockerfile`, `render.yaml`, `Procfile`, `.ebextensions/` | Deployment config (Render/Docker, or AWS Elastic Beanstalk) |
 
 ## Run locally
@@ -77,14 +77,32 @@ docker run -p 8000:8000 student-performance
 
 ### GitHub Pages (live)
 
-`web/` is a static version of the app for GitHub Pages. `export_web_model.py` writes the preprocessing and regression parameters to `web/model.json`, and `web/predict.js` applies them in the browser.
+The web app in `web/` is a static page: inputs as one-tap chips and sliders, a
+live estimate with a ±RMSE range, a chart of how many points each input adds or
+removes compared with an average student, and average scores by group for all
+1,000 students.
 
-> **Note on the saved model:** the trained `LinearRegression` fell into the dummy-variable trap (one-hot columns plus an intercept), so its raw coefficients are around ±10¹⁴ and cancel each other out. Evaluated directly in float64, as scikit-learn does, predictions wobble by up to ±0.4 points. The export folds each categorical column into small per-category offsets using exact rational arithmetic, so the web version computes the model's exact value (within 3e-14 of an exact-arithmetic reference over all 1,000 students). Retraining with `OneHotEncoder(drop="first")` would remove the issue at the source.
+Its model comes from `train_web_model.py`: the same features and 80/20 split as
+the pipeline, but with `OneHotEncoder(drop="first")`. The original
+`artifacts/model.pkl` fell into the dummy-variable trap (one-hot columns plus an
+intercept), which made its coefficients about ±10¹⁴, so they cancelled and were
+numerically fragile. Dropping a baseline category removes that, and every
+coefficient now reads directly as points.
 
-`.github/workflows/pages.yml` copies `web/` to the `gh-pages` branch on every
-push to `main`, and GitHub Pages serves it at <https://biggyatz.github.io/CI-CD-prediction-pipelining-of-Student-Performance/>. If you retrain and
-replace the files in `artifacts/`, run `python export_web_model.py` and commit the new
-`web/model.json`.
+| Metric | Value |
+| --- | --- |
+| Test R² (200 unseen students) | 0.880 |
+| 5-fold CV R² | 0.872 ± 0.011 |
+| Test RMSE / MAE | 5.39 / 4.21 points |
+
+`web/predict.js` reproduces scikit-learn's predictions exactly (max difference
+3e-14 over all 1,000 students). After changing the data or features, run
+`python train_web_model.py` and commit `web/model.json`.
+`.github/workflows/pages.yml` publishes `web/` to `gh-pages` on every push to `main`.
+
+> Effects are conditional on reading and writing scores. For example, test
+> preparation shows little effect on math *once reading and writing are known*,
+> because its benefit shows up mainly in those scores.
 
 ### Flask server (optional)
 
