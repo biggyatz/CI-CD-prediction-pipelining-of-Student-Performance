@@ -1,5 +1,7 @@
 # Student Performance Prediction — End-to-End ML Pipeline
 
+**Live demo:** <https://biggyatz.github.io/CI-CD-prediction-pipelining-of-Student-Performance/> (runs entirely in the browser, hosted on GitHub Pages)
+
 Predicts a student's **math score** from demographics, lunch type, test
 preparation and their reading/writing scores. The project is structured as a
 production-style ML pipeline (ingestion → transformation → training →
@@ -46,6 +48,7 @@ application.py ── src/pipeline/predict_pipeline.py  (loads both pickles, pre
 | `artifacts/` | Trained preprocessor and model (scikit-learn 1.3.2) plus the data splits |
 | `notebook/` | EDA and model-training notebooks, raw data |
 | `templates/` | HTML pages |
+| `web/`, `export_web_model.py` | Static in-browser version published to GitHub Pages |
 | `Dockerfile`, `render.yaml`, `Procfile`, `.ebextensions/` | Deployment config (Render/Docker, or AWS Elastic Beanstalk) |
 
 ## Run locally
@@ -72,14 +75,22 @@ docker run -p 8000:8000 student-performance
 
 ## Deploy
 
-The original AWS Elastic Beanstalk environment
-(`studentperformance-env-1…elasticbeanstalk.com`) has been shut down.
-Two options:
+### GitHub Pages (live)
 
-* **Render (free):** <https://dashboard.render.com> → **New → Blueprint** →
-  select this repo → **Apply**. Free services sleep after 15 minutes idle.
-* **AWS Elastic Beanstalk (paid):** `eb init -p python-3.11 student-performance && eb create`.
-  `.ebextensions/python.config` points EB at `application:application`.
+`web/` is a static version of the app for GitHub Pages. `export_web_model.py` writes the preprocessing and regression parameters to `web/model.json`, and `web/predict.js` applies them in the browser.
+
+> **Note on the saved model:** the trained `LinearRegression` fell into the dummy-variable trap (one-hot columns plus an intercept), so its raw coefficients are around ±10¹⁴ and cancel each other out. Evaluated directly in float64, as scikit-learn does, predictions wobble by up to ±0.4 points. The export folds each categorical column into small per-category offsets using exact rational arithmetic, so the web version computes the model's exact value (within 3e-14 of an exact-arithmetic reference over all 1,000 students). Retraining with `OneHotEncoder(drop="first")` would remove the issue at the source.
+
+`.github/workflows/pages.yml` copies `web/` to the `gh-pages` branch on every
+push to `main`, and GitHub Pages serves it at <https://biggyatz.github.io/CI-CD-prediction-pipelining-of-Student-Performance/>. If you retrain and
+replace the files in `artifacts/`, run `python export_web_model.py` and commit the new
+`web/model.json`.
+
+### Flask server (optional)
+
+The Flask app (`Dockerfile`, `render.yaml`) is still here for running the
+original server version, for example on Render: **New → Blueprint →** pick
+this repo **→ Apply**.
 
 ## Changelog (2026 clean-up)
 

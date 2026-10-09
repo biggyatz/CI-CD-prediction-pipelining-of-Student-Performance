@@ -1,0 +1,50 @@
+{
+ "numeric": {
+  "columns": [
+   "writing_score",
+   "reading_score"
+  ],
+  "mean": [
+   68.45625,
+   69.555
+  ],
+  "scale": [
+   15.07591078301739,
+   14.452490269846232
+  ],
+  "coef": [
+   10.807377370132576,
+   3.6791656541500704
+  ]
+ },
+ "offsets": {
+  "gender": {
+   "female": 0.0,
+   "male": 13.0880245220603
+  },
+  "race_ethnicity": {
+   "group A": 0.0,
+   "group B": 0.1596333146364815,
+   "group C": -1.0497559371038214,
+   "group D": -0.9584157361638295,
+   "group E": 4.695186532943439
+  },
+  "parental_level_of_education": {
+   "associate's degree": 0.0,
+   "bachelor's degree": -1.239048069359965,
+   "high school": 1.0887417851220498,
+   "master's degree": -0.8915577143568909,
+   "some college": 0.9071251087527216,
+   "some high school": 0.318143033472243
+  },
+  "lunch": {
+   "free/reduced": 0.0,
+   "standard": 3.51593416515351
+  },
+  "test_preparation_course": {
+   "completed": 0.0,
+   "none": 3.557295512480683
+  }
+ },
+ "intercept": 55.16462905887552
+}
