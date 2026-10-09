@@ -1,50 +1,193 @@
 {
+ "intercept": -10.156027047981866,
  "numeric": {
-  "columns": [
-   "writing_score",
-   "reading_score"
-  ],
-  "mean": [
-   68.45625,
-   69.555
-  ],
-  "scale": [
-   15.07591078301739,
-   14.452490269846232
-  ],
-  "coef": [
-   10.807377370132576,
-   3.6791656541500704
-  ]
+  "reading_score": 0.23602256178534262,
+  "writing_score": 0.7241479345599156
  },
  "offsets": {
   "gender": {
    "female": 0.0,
-   "male": 13.0880245220603
+   "male": 13.064883856179103
   },
   "race_ethnicity": {
    "group A": 0.0,
-   "group B": 0.1596333146364815,
-   "group C": -1.0497559371038214,
-   "group D": -0.9584157361638295,
-   "group E": 4.695186532943439
+   "group B": 0.3593227983198829,
+   "group C": -0.6256171537872448,
+   "group D": -0.6132362404201914,
+   "group E": 4.892648955919743
   },
   "parental_level_of_education": {
-   "associate's degree": 0.0,
-   "bachelor's degree": -1.239048069359965,
-   "high school": 1.0887417851220498,
-   "master's degree": -0.8915577143568909,
-   "some college": 0.9071251087527216,
-   "some high school": 0.318143033472243
+   "some high school": 0.0,
+   "high school": 0.17284210660770707,
+   "some college": 0.24238598546724743,
+   "associate's degree": -0.7564701614281466,
+   "bachelor's degree": -1.473371291427981,
+   "master's degree": -2.1569589978691606
   },
   "lunch": {
    "free/reduced": 0.0,
-   "standard": 3.51593416515351
+   "standard": 3.5100748894192253
   },
   "test_preparation_course": {
    "completed": 0.0,
-   "none": 3.557295512480683
+   "none": 3.289642361913268
   }
  },
- "intercept": 55.16462905887552
+ "num_mean": {
+  "reading_score": 69.169,
+  "writing_score": 68.054
+ },
+ "offset_mean": {
+  "gender": 6.297274018678329,
+  "race_ethnicity": 0.39300241846132056,
+  "parental_level_of_education": -0.38039848348912225,
+  "lunch": 2.2639983036754003,
+  "test_preparation_course": 2.111950396348317
+ },
+ "metrics": {
+  "test_r2": 0.8804,
+  "test_rmse": 5.394,
+  "test_mae": 4.215,
+  "cv_r2_mean": 0.8717,
+  "cv_r2_std": 0.0108,
+  "n_train": 800,
+  "n_test": 200
+ },
+ "groups": {
+  "gender": [
+   {
+    "value": "female",
+    "n": 518,
+    "math": 63.63,
+    "reading": 72.61,
+    "writing": 72.47
+   },
+   {
+    "value": "male",
+    "n": 482,
+    "math": 68.73,
+    "reading": 65.47,
+    "writing": 63.31
+   }
+  ],
+  "race_ethnicity": [
+   {
+    "value": "group A",
+    "n": 89,
+    "math": 61.63,
+    "reading": 64.67,
+    "writing": 62.67
+   },
+   {
+    "value": "group B",
+    "n": 190,
+    "math": 63.45,
+    "reading": 67.35,
+    "writing": 65.6
+   },
+   {
+    "value": "group C",
+    "n": 319,
+    "math": 64.46,
+    "reading": 69.1,
+    "writing": 67.83
+   },
+   {
+    "value": "group D",
+    "n": 262,
+    "math": 67.36,
+    "reading": 70.03,
+    "writing": 70.15
+   },
+   {
+    "value": "group E",
+    "n": 140,
+    "math": 73.82,
+    "reading": 73.03,
+    "writing": 71.41
+   }
+  ],
+  "parental_level_of_education": [
+   {
+    "value": "some high school",
+    "n": 179,
+    "math": 63.5,
+    "reading": 66.94,
+    "writing": 64.89
+   },
+   {
+    "value": "high school",
+    "n": 196,
+    "math": 62.14,
+    "reading": 64.7,
+    "writing": 62.45
+   },
+   {
+    "value": "some college",
+    "n": 226,
+    "math": 67.13,
+    "reading": 69.46,
+    "writing": 68.84
+   },
+   {
+    "value": "associate's degree",
+    "n": 222,
+    "math": 67.88,
+    "reading": 70.93,
+    "writing": 69.9
+   },
+   {
+    "value": "bachelor's degree",
+    "n": 118,
+    "math": 69.39,
+    "reading": 73.0,
+    "writing": 73.38
+   },
+   {
+    "value": "master's degree",
+    "n": 59,
+    "math": 69.75,
+    "reading": 75.37,
+    "writing": 75.68
+   }
+  ],
+  "lunch": [
+   {
+    "value": "free/reduced",
+    "n": 355,
+    "math": 58.92,
+    "reading": 64.65,
+    "writing": 63.02
+   },
+   {
+    "value": "standard",
+    "n": 645,
+    "math": 70.03,
+    "reading": 71.65,
+    "writing": 70.82
+   }
+  ],
+  "test_preparation_course": [
+   {
+    "value": "completed",
+    "n": 358,
+    "math": 69.7,
+    "reading": 73.89,
+    "writing": 74.42
+   },
+   {
+    "value": "none",
+    "n": 642,
+    "math": 64.08,
+    "reading": 66.53,
+    "writing": 64.5
+   }
+  ]
+ },
+ "overall": {
+  "math_score": 66.09,
+  "reading_score": 69.17,
+  "writing_score": 68.05
+ },
+ "n": 1000
 }
