@@ -1,6 +1,6 @@
 # Student Performance Prediction — End-to-End ML Pipeline
 
-**Live demo:** <https://biggyatz.github.io/CI-CD-prediction-pipelining-of-Student-Performance/>: estimate a math score, see which inputs moved it, and explore group averages (runs entirely in the browser).
+**Live demo:** <https://biggyatz.github.io/student-performance-insights/>: estimate a math score, see which inputs moved it, and explore group averages (runs entirely in the browser).
 
 Predicts a student's **math score** from demographics, lunch type, test
 preparation and their reading/writing scores. The project is structured as a
