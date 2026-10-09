@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Performance Predictor</title>
+<meta name="description" content="Predict a student's math score from background and reading/writing scores, running entirely in your browser.">
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --text:#1d2330; --muted:#5b6475; --accent:#1f6feb; --line:#dfe3ea; --ok:#e7f3ec; --okText:#155c33; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#12141a; --card:#1b1f27; --text:#e8eaf0; --muted:#a3abbb; --accent:#6ea8ff; --line:#2a303b; --ok:#16301f; --okText:#8fe0ad; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:880px; margin:0 auto; padding:40px 16px 56px; }
+  h1 { margin:0 0 6px; font-size:clamp(1.7rem,4vw,2.2rem); }
+  .lead { color:var(--muted); margin:0 0 24px; }
+  form { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; }
+  .grid { display:grid; gap:14px 18px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+  label { display:block; font-weight:600; font-size:.92rem; }
+  label small { display:block; font-weight:400; color:var(--muted); font-size:.82rem; margin-bottom:4px; }
+  input { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:transparent; color:inherit; font:inherit; }
+  input:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  button { padding:10px 18px; border-radius:8px; border:1px solid var(--accent); font:inherit; font-weight:600; cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; }
+  button.secondary { background:transparent; color:var(--accent); }
+  #result { margin-top:18px; padding:14px 16px; border-radius:10px; background:var(--ok); color:var(--okText); font-size:1.15rem; font-weight:600; }
+  #result[hidden] { display:none; }
+  footer { margin-top:28px; color:var(--muted); font-size:.9rem; }
+  footer a { color:var(--accent); }
+</style>
+<style> select { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:inherit; font:inherit; } </style>
+</head>
+<body>
+<main>
+  <h1>Student Performance Predictor</h1>
+  <p class="lead">Predicts a student's <strong>math score</strong> from their background and their reading and writing scores. The model is the linear regression selected by the project's ML pipeline (test R² 0.88, RMSE ≈ 5.4 points), and it runs entirely in your browser.</p>
+
+  <form id="form" novalidate>
+    <div class="grid" id="fields"></div>
+    <div class="actions">
+      <button type="submit" class="primary">Predict math score</button>
+      <button type="button" class="secondary" id="example">Fill example</button>
+    </div>
+    <div id="result" role="status" aria-live="polite" hidden></div>
+  </form>
+
+  <footer>Source, pipeline and notebooks: <a href="https://github.com/biggyatz/CI-CD-prediction-pipelining-of-Student-Performance">github.com/biggyatz/CI-CD-prediction-pipelining-of-Student-Performance</a></footer>
+</main>
+<script src="predict.js"></script>
+<script>
+  const LABELS = {
+    gender: "Gender",
+    race_ethnicity: "Race / ethnicity group",
+    parental_level_of_education: "Parental level of education",
+    lunch: "Lunch type",
+    test_preparation_course: "Test preparation course",
+  };
+  const EXAMPLE = { gender: "female", race_ethnicity: "group B", parental_level_of_education: "bachelor's degree",
+                    lunch: "standard", test_preparation_course: "none", reading_score: 72, writing_score: 74 };
+  const esc = s => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  const modelReady = fetch("model.json").then(r => r.json()).then(model => {
+    const fields = document.getElementById("fields");
+    for (const [col, table] of Object.entries(model.offsets)) {
+      const options = Object.keys(table).map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+      fields.insertAdjacentHTML("beforeend",
+        `<label for="${col}">${LABELS[col]}<select id="${col}" required><option value="">Select…</option>${options}</select></label>`);
+    }
+    for (const [col, name] of [["reading_score", "Reading score (0–100)"], ["writing_score", "Writing score (0–100)"]]) {
+      fields.insertAdjacentHTML("beforeend",
+        `<label for="${col}">${name}<input id="${col}" type="number" min="0" max="100" step="any" required></label>`);
+    }
+    return model;
+  });
+  document.getElementById("example").onclick = async () => {
+    await modelReady;
+    for (const [col, v] of Object.entries(EXAMPLE)) document.getElementById(col).value = v;
+  };
+  const result = document.getElementById("result");
+  document.getElementById("form").onsubmit = async (e) => {
+    e.preventDefault();
+    const model = await modelReady;
+    const row = {};
+    for (const col of [...Object.keys(model.offsets), "reading_score", "writing_score"]) row[col] = document.getElementById(col).value;
+    result.hidden = false;
+    const scores = [row.reading_score, row.writing_score].map(parseFloat);
+    if (Object.values(row).some(v => v === "") || scores.some(v => !Number.isFinite(v) || v < 0 || v > 100)) {
+      result.textContent = "Please choose every option and enter scores between 0 and 100.";
+      return;
+    }
+    result.textContent = "Predicted math score: " + predictMathScore(model, row).toFixed(1);
+  };
+</script>
+</body>
+</html>

@@ -5,3 +5,4 @@ catboost_info
 logs
 __pycache__
 venv
+web
