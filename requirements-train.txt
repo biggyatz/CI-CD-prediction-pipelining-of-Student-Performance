@@ -1,0 +1,9 @@
+# Everything needed to re-run the training pipeline and notebooks:
+#   pip install -r requirements-train.txt
+#   python -m src.components.data_ingestion
+-r requirements.txt
+catboost==1.2.5
+xgboost==2.0.3
+matplotlib==3.8.4
+seaborn==0.13.2
+-e .
